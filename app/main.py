@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from app.db.connection import get_connection
 
 app = FastAPI() #Server created
 
@@ -22,3 +23,18 @@ def square(number : int):
 @app.get("/greet")
 def greet(name: str = "guest"):
     return {"greeting": f"Hello, {name}"}
+
+@app.get("/users")
+def list_users():
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("SELECT id, email, created_at FROM users;")
+    rows = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    return {"users": rows}
+
+
