@@ -4,3 +4,4 @@ Studied about @app.get, and how each is a request to that specific URL, or a "re
 
 PostGRES is using SQL commands. That is our primary database being used. Servers are stateless in their own python code.
 
+I created a new folder named db, which has the connection file, which contains the connection function, being used in app.py, to connect to the PostGres. It is imported in the file at the top using the file name, and used as a route/decorator.

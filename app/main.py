@@ -26,8 +26,8 @@ def greet(name: str = "guest"):
 
 @app.get("/users")
 def list_users():
-    conn = get_connection()
-    cur = conn.cursor()
+    conn = get_connection() #Establishes connection
+    cur = conn.cursor() #Makes cursor to use for commands using execute
 
     cur.execute("SELECT id, email, created_at FROM users;")
     rows = cur.fetchall()
