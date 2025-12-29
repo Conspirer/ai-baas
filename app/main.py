@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from app.db.connection import get_connection
+from sqlalchemy import text
+from app.db.engine import engine
 
 app = FastAPI() #Server created
 
@@ -26,15 +28,11 @@ def greet(name: str = "guest"):
 
 @app.get("/users")
 def list_users():
-    conn = get_connection() #Establishes connection
-    cur = conn.cursor() #Makes cursor to use for commands using execute
+    with engine.connect() as conn:
+        result = conn.execute(
+            text("SELECT id, email, created_at FROM users")
+        )
+        users = result.fetchall()
 
-    cur.execute("SELECT id, email, created_at FROM users;")
-    rows = cur.fetchall()
-
-    cur.close()
-    conn.close()
-
-    return {"users": rows}
-
+        return {"users": [dict(row) for row in users]}
 
