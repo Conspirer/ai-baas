@@ -12,6 +12,11 @@ from app.core.security import hash_password
 from app.db.session import SessionLocal
 from app.models.user import User
 
+from app.schemas.auth import LoginRequest
+from app.core.security import verify_password
+from app.core.jwt import create_access_token
+
+
 
 app = FastAPI() #Server created
 
@@ -72,6 +77,25 @@ def signup(user: UserCreate):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email already registered"
         )
+    
+    finally:
+        db.close()
+
+@app.post("/login")
+def login(credentials: LoginRequest):
+    db = SessionLocal()
+    try:
+        user = db.query(User).filter(User.email == credentials.email).first()
+
+        if not user or not verify_password(credentials.password, user.password_hash):
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid credentials"
+            )
+        
+        token = create_access_token({"sub": str(user.id)})
+
+        return {"access_token": token, "token_type": "bearer"}
     
     finally:
         db.close()
