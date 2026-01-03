@@ -13,6 +13,6 @@ import os is a way of talking to the OS, like files, folders, env files, etc. It
 
 We useSQLAlchemy to manage database connections. We use a database connection string in the engine.py file to address the DB. The engine creates a pool of connections. 
 
-We're use ORM of SQLAlchemy to map the database tables to python classes. Create the base.py to use models, which are just python classes that represent data. Great for coding and using python instead of SQL. ORM is the middle translator. Declarative base creates a registry, tracking the information of the db. Base makes the python function understand it is to use the database.
+We're using ORM of SQLAlchemy to map the database tables to python classes. Create the base.py to use models, which are just python classes that represent data. Great for coding and using python instead of SQL. ORM is the middle translator. Declarative base creates a registry, tracking the information of the db. Base makes the python function understand it is to use the database.
 
-Sessions allow for a workspace for db operations. sessionmaker is a blueprint for making sessions.
+Sessions allow for a workspace for db operations. sessionmaker is a blueprint for making sessions. We use the connection pooling inside sessions.
