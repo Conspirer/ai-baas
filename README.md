@@ -16,3 +16,6 @@ We useSQLAlchemy to manage database connections. We use a database connection st
 We're using ORM of SQLAlchemy to map the database tables to python classes. Create the base.py to use models, which are just python classes that represent data. Great for coding and using python instead of SQL. ORM is the middle translator. Declarative base creates a registry, tracking the information of the db. Base makes the python function understand it is to use the database.
 
 Sessions allow for a workspace for db operations. sessionmaker is a blueprint for making sessions. We use the connection pooling inside sessions.
+
+We use built-in library of passlib, bcrypt, to encrypt the passwords we store in the database.
+HASHING IS ONE-WAY, NOT THE SAME AS ENCRYPTION. The hashed password cannot be turned back into the original password. bcrypt is slow, uses salting(random string added to password before hashing), cost factor, better than SHA256 or MD5, makes brute-force expensive.

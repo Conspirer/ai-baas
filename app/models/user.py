@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.sql import func
 from app.db.base import Base
 
-class User(Base):
+class User(Base): #SQLAlchemy model for users, maps to "users" table
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)

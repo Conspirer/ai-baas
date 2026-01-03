@@ -4,6 +4,14 @@ from sqlalchemy import text
 from app.db.engine import engine
 from app.db.session import SessionLocal
 from app.models.user import User
+from fastapi import HTTPException, status
+from sqlalchemy.exc import IntegrityError
+
+from app.schemas.user import UserCreate
+from app.core.security import hash_password
+from app.db.session import SessionLocal
+from app.models.user import User
+
 
 app = FastAPI() #Server created
 
@@ -39,3 +47,31 @@ def list_users():
         ]}
     finally:
         db.close() #Session ended, connection returned to pool
+
+@app.post("/signup", status_code=status.HTTP_201_CREATED)
+def signup(user: UserCreate):
+    db = SessionLocal()
+    try:
+        new_user = User(
+            email=user.email,
+            password_hash = hash_password(user.password)
+        )
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+
+        return {
+            "id": new_user.id,
+            "email": new_user.email,
+            "created_at": new_user.created_at
+        }
+    
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email already registered"
+        )
+    
+    finally:
+        db.close()
