@@ -16,6 +16,9 @@ from app.schemas.auth import LoginRequest
 from app.core.security import verify_password
 from app.core.jwt import create_access_token
 
+from app.core.dependencies import get_current_user
+from fastapi import Depends
+
 
 
 app = FastAPI() #Server created
@@ -99,3 +102,7 @@ def login(credentials: LoginRequest):
     
     finally:
         db.close()
+
+@app.get("/me")
+def get_me(user_id: str = Depends(get_current_user)):
+    return {"user_id": user_id}
