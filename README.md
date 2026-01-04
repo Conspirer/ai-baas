@@ -24,6 +24,7 @@ JWT, or JSON Web Tokens are stored in Headers of HTML requests, which are used t
 
 API Keys do not expire, unlike JWTs, they identify a project instead of a user's identity. They can be rotated or revoked, while JWTs are used for sessions.
 
-Dependency injection is basically when the helper function is called by FastAPI using Depends() anywhere you want without having to rewrite the auth logic over and over again.
+Dependency injection is basically when the helper function is called by FastAPI using Depends() anywhere you want without having to rewrite the auth logic over and over again. The parameters only define what is required, not what is being done.
 
 We use sliding window rate limiting, using a new table for each API key and a new table for counting how many times each API key is used in each time window, so that we can apply rate limiting and limit the amount of API calls in a specified time, leading to controlled usage.
+

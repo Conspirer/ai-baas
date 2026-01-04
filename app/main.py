@@ -27,6 +27,8 @@ from app.core.api_key_auth import get_api_key
 from app.core.rate_limit import rate_limit
 from fastapi import Depends
 
+from app.services.usage_service import get_user_usage
+
 
 app = FastAPI() #Server created
 
@@ -149,3 +151,11 @@ def generate_text(
         "output": "This is where AI output would go."
     }
     
+
+@app.get("/usage")
+def usage_dashboard(user_id: str = Depends(get_current_user)):
+    db = SessionLocal()
+    try:
+        return get_user_usage(db, int(user_id))
+    finally:
+        db.close()
