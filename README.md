@@ -1,30 +1,142 @@
-FastAPI is being used, a framework for handling HTTP requests.
+AI Backend as a Service (AI-BaaS)
+Overview
 
-Studied about @app.get, and how each is a request to that specific URL, or a "request", as we call it, is sent when we visit that specific URL. Then, the function below it is called. We can use {} to fetch the values in the url.
+AI-BaaS is a production-ready backend service that provides authenticated, rate-limited access to AI endpoints.
+It is designed to mirror how real AI platforms (e.g. OpenAI, Stripe-style APIs) handle authentication, API keys, usage tracking, and rate limiting.
 
-PostGRES is using SQL commands. That is our primary database being used. Servers are stateless in their own python code. The driver being used to talk to DB is psycopg2.
-
-I created a new folder named db, which has the connection file, which contains the connection function, being used in app.py, to connect to the PostGres. It is imported in the file at the top using the file name, and used as a route/decorator.
+The project focuses on backend engineering fundamentals rather than model inference, emphasizing correctness, security, and scalability.
 
 
-We use config.py to load the env variables at once, so that now we can use the config.py everywhere else, instead of directly using .env. 
 
-import os is a way of talking to the OS, like files, folders, env files, etc. It helps load the env using load_dotenv(), only after which functions like os.getenv("DB_NAME") work.
 
-We useSQLAlchemy to manage database connections. We use a database connection string in the engine.py file to address the DB. The engine creates a pool of connections. 
+Key Features
 
-We're using ORM of SQLAlchemy to map the database tables to python classes. Create the base.py to use models, which are just python classes that represent data. Great for coding and using python instead of SQL. ORM is the middle translator. Declarative base creates a registry, tracking the information of the db. Base makes the python function understand it is to use the database.
+JWT-based user authentication for human access
 
-Sessions allow for a workspace for db operations. sessionmaker is a blueprint for making sessions. We use the connection pooling inside sessions.
+Secure API key system for machine-to-machine communication
 
-We use built-in library of passlib, bcrypt, to encrypt the passwords we store in the database.
-HASHING IS ONE-WAY, NOT THE SAME AS ENCRYPTION. The hashed password cannot be turned back into the original password. bcrypt is slow, uses salting(random string added to password before hashing), cost factor, better than SHA256 or MD5, makes brute-force expensive.
+Hashed API key storage (raw keys never persisted)
 
-JWT, or JSON Web Tokens are stored in Headers of HTML requests, which are used to verify the user. It maintains the user's login state for a specific time period, and disallows foreign access.
+Per-API-key rate limiting using a sliding time window
 
-API Keys do not expire, unlike JWTs, they identify a project instead of a user's identity. They can be rotated or revoked, while JWTs are used for sessions.
+PostgreSQL-backed usage tracking
 
-Dependency injection is basically when the helper function is called by FastAPI using Depends() anywhere you want without having to rewrite the auth logic over and over again. The parameters only define what is required, not what is being done.
+Usage analytics endpoint (total usage, 24h usage, per-key breakdown)
 
-We use sliding window rate limiting, using a new table for each API key and a new table for counting how many times each API key is used in each time window, so that we can apply rate limiting and limit the amount of API calls in a specified time, leading to controlled usage.
+Stateless backend architecture
 
+Cloud-deployed with managed PostgreSQL
+
+
+
+
+
+Architecture:
+
+Client
+  └── FastAPI
+        ├── JWT Authentication (humans)
+        ├── API Key Authentication (machines)
+        ├── Rate Limiter
+        ├── Usage Tracker
+        └── PostgreSQL
+
+
+
+
+Authentication Model
+
+User Authentication (JWT):-
+
+Users authenticate via email & password
+
+Passwords are hashed using bcrypt
+
+JWTs are short-lived and sent via the Authorization header
+
+Used for dashboard-style endpoints (e.g. /usage, /api-keys)
+
+
+
+API Key Authentication:-
+
+Users can generate API keys
+
+Raw API keys are shown once and never stored
+
+Only hashed API keys are persisted
+
+API keys authenticate requests via headers (e.g. X-API-Key)
+
+Designed for scripts, services, and integrations
+
+
+
+Rate Limiting & Usage Tracking
+
+Rate limiting is enforced per API key, not per user
+
+Requests are tracked in a dedicated api_usage table
+
+Sliding window strategy (e.g. X requests per hour)
+
+Usage analytics include:
+
+Total requests
+
+Requests in the last 24 hours
+
+Per-API-key usage breakdown
+
+This mirrors real SaaS billing and abuse-prevention patterns.
+
+
+
+Tech Stack
+
+Backend: FastAPI
+
+Database: PostgreSQL
+
+ORM: SQLAlchemy
+
+Auth: JWT (python-jose), Passlib (bcrypt)
+
+Deployment: Railway
+
+Configuration: Environment variables
+
+
+
+Deployment
+
+Deployed on Railway
+
+Managed PostgreSQL instance
+
+Secrets and configuration injected via environment variables
+
+No hardcoded credentials
+
+.env used only for local development
+
+
+
+Future Improvements
+
+API key revocation and rotation
+
+Daily/monthly usage quotas
+
+Admin endpoints
+
+Billing integration
+
+Observability (metrics, tracing)
+
+Horizontal scaling with Redis-based rate limiting
+
+
+
+License
+MIT
