@@ -19,6 +19,10 @@ from app.core.jwt import create_access_token
 from app.core.dependencies import get_current_user
 from fastapi import Depends
 
+from app.models.api_key import APIKey
+from app.core.api_keys import generate_api_key, hash_api_key
+
+from app.core.api_key_auth import get_api_key
 
 
 app = FastAPI() #Server created
@@ -106,3 +110,34 @@ def login(credentials: LoginRequest):
 @app.get("/me")
 def get_me(user_id: str = Depends(get_current_user)):
     return {"user_id": user_id}
+
+@app.post("/api-keys")
+def create_api_key(user_id: str = Depends(get_current_user)):
+    db = SessionLocal()
+    try:
+        raw_key = generate_api_key()
+        key_hash = hash_api_key(raw_key)
+
+        api_key = APIKey(
+            key_hash=key_hash,
+            user_id=int(user_id)
+        )
+
+        db.add(api_key)
+        db.commit()
+
+        return {
+            "api_key": raw_key,
+            "warning": "This key will not be shown again. Store it securely."
+        }
+    
+    finally:
+        db.close()
+
+
+@app.post("/ai/generate")
+def generate_text(user_id: int = Depends(get_api_key)):
+    return {
+        "user_id": user_id,
+        "output": "This is where AI output would go."
+    }

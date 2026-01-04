@@ -19,3 +19,9 @@ Sessions allow for a workspace for db operations. sessionmaker is a blueprint fo
 
 We use built-in library of passlib, bcrypt, to encrypt the passwords we store in the database.
 HASHING IS ONE-WAY, NOT THE SAME AS ENCRYPTION. The hashed password cannot be turned back into the original password. bcrypt is slow, uses salting(random string added to password before hashing), cost factor, better than SHA256 or MD5, makes brute-force expensive.
+
+JWT, or JSON Web Tokens are stored in Headers of HTML requests, which are used to verify the user. It maintains the user's login state for a specific time period, and disallows foreign access.
+
+API Keys do not expire, unlike JWTs, they identify a project instead of a user's identity. They can be rotated or revoked, while JWTs are used for sessions.
+
+Dependency injection is basically when the helper function is called by FastAPI using Depends() anywhere you want without having to rewrite the auth logic over and over again.
