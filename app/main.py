@@ -24,6 +24,9 @@ from app.core.api_keys import generate_api_key, hash_api_key
 
 from app.core.api_key_auth import get_api_key
 
+from app.core.rate_limit import rate_limit
+from fastapi import Depends
+
 
 app = FastAPI() #Server created
 
@@ -136,8 +139,13 @@ def create_api_key(user_id: str = Depends(get_current_user)):
 
 
 @app.post("/ai/generate")
-def generate_text(user_id: int = Depends(get_api_key)):
+def generate_text(
+    auth = Depends(get_api_key)
+):
+    rate_limit(auth["api_key_id"])
+
     return {
-        "user_id": user_id,
+        "user_id": auth["user_id"],
         "output": "This is where AI output would go."
     }
+    

@@ -17,7 +17,10 @@ def get_api_key(x_api_key: str = Header(...)): #The ... after Header makes it ma
                 detail="Invalid API Key"
             )
         
-        return key.user_id
+        return {
+            "user_id": key.user_id,
+            "api_key_id": key.id
+        }
     finally:
         db.close()
 
